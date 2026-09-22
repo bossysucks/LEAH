@@ -15,8 +15,9 @@
     "restore:db": "node scripts/restore.js",
     "backup:drill": "node scripts/restore-drill.js"
   },
-  "dependencies": {
+"dependencies": {
     "@discordjs/rest": "^2.6.1",
+    "@google/genai": "^0.1.2",
     "axios": "^1.15.2",
     "discord.js": "^14.26.4",
     "dotenv": "^17.2.3",
