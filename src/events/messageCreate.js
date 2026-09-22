@@ -23,7 +23,8 @@ const ai = new GoogleGenAI();
 export default {
   name: Events.MessageCreate,
   async execute(message, client) {
-    console.log(`RAW MESSAGE RECEIVED: "${message.content}" from ${message.author?.tag}`);
+    // THIS IS THE ABSOLUTE FIRST LINE - IT WILL CATCH EVERY MESSAGE
+    console.log(`>>> RAW MESSAGE TRIGGERED: "${message.content}" from ${message.author?.tag} in guild ID: ${message.guild?.id}`);
 
     try {
       if (message.author.bot || !message.guild) return;
@@ -64,7 +65,7 @@ export default {
       // 3. Prefix Command Handler
       await handlePrefixCommand(message, client);
     } catch (error) {
-      logger.error('Error in messageCreate event:', error);
+      console.error("FATAL ERROR IN MESSAGECREATE:", error);
     }
   }
 };
