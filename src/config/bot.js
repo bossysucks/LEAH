@@ -156,16 +156,16 @@ export const botConfig = {
   },
 
   // =========================
-  // ECONOMY SETTINGS
+// ECONOMY SETTINGS
   // =========================
   economy: {
     currency: {
       // Currency display name.
-      name: "coins",
+      name: "buck",
       // Plural display name.
-      namePlural: "coins",
+      namePlural: "bucks",
       // Currency symbol shown in balances.
-      symbol: "$",
+      symbol: "💵",
     },
 
     // Starting balance for new users.
@@ -178,8 +178,8 @@ export const botConfig = {
     dailyAmount: 100,
 
     // Work command random payout range.
-    workMin: 10,
-    workMax: 100,
+    workMin: 500,
+    workMax: 2500,
 
     // Beg command random payout range.
     begMin: 5,
