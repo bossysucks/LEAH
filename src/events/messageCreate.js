@@ -29,6 +29,7 @@ const ai = new GoogleGenAI();
 export default {
   name: Events.MessageCreate,
   async execute(message, client) {
+    logger.info(`Message content: "${message.content}", Mentions bot: ${message.mentions.has(client.user)}`);
     try {
       if (message.author.bot || !message.guild) return;
 
