@@ -21,6 +21,7 @@ export function unwrapReplitData(data) {
  * never throws — callers use the guild config service for typed errors.
  */
 export async function readGuildConfig(client, guildId, context = {}) {
+    console.log(`>>> readGuildConfig triggered for guild: ${guildId}`);
     try {
         if (!client?.db || typeof client.db.get !== 'function') {
             logger.warn(`Database unavailable for readGuildConfig in guild ${guildId}`);
