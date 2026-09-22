@@ -12,6 +12,7 @@ import { getCommandPrefix, getBotMessage, isBotOwner, isCommandCategoryEnabled, 
 import { enforceAbuseProtection, formatCooldownDuration } from '../utils/abuseProtection.js';
 import { createEmbed } from '../utils/embeds.js';
 import { isCommandEnabled } from '../services/commandAccessService.js';
+import { GoogleGenAI } from '@google/genai';
 import {
   getCountingGameConfig,
   saveCountingGameConfig,
@@ -22,6 +23,9 @@ import {
 const MESSAGE_XP_RATE_LIMIT_ATTEMPTS = 12;
 const MESSAGE_XP_RATE_LIMIT_WINDOW_MS = 10000;
 
+// Initialize Google Gen AI client (reads GEMINI_API_KEY from environment variables automatically)
+const ai = new GoogleGenAI();
+
 export default {
   name: Events.MessageCreate,
   async execute(message, client) {
@@ -30,13 +34,44 @@ export default {
 
       logger.debug(`Message received from ${message.author.tag}: ${message.content}`);
 
+      // 1. AI CHAT LISTENER (Triggers if someone tags Leah)
+      if (message.mentions.has(client.user)) {
+        try {
+          await message.channel.sendTyping();
+
+          // Strip out the mention tag from the text prompt
+          const prompt = message.content
+            .replace(`<@!${client.user.id}>`, '')
+            .replace(`<@${client.user.id}>`, '')
+            .trim();
+
+          const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+              systemInstruction: "You are Leah, a sharp, car-obsessed shop manager for LS Spec & Customs. You use car slang, talk about tuning, builds, and shop life, keeping your answers punchy.",
+            },
+          });
+
+          await message.reply(response.text);
+          return; // Stop processing further handlers for this direct AI message
+        } catch (aiError) {
+          logger.error('Gemini AI error in messageCreate:', aiError);
+          await message.reply("My garage radio's glitching out, try asking me again in a second.").catch(() => {});
+          return;
+        }
+      }
+
+      // 2. Counting Game Handler
       const countingProcessed = await handleCountingGame(message, client);
       if (countingProcessed) {
         return;
       }
 
+      // 3. Prefix Command Handler
       await handlePrefixCommand(message, client);
 
+      // 4. Leveling XP Handler
       await handleLeveling(message, client);
     } catch (error) {
       logger.error('Error in messageCreate event:', error);
